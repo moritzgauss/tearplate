@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schlosserbetrieb Offenbach</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Helvetica, Arial, sans-serif;
+      color: white;
+      background: url('https://raw.githubusercontent.com/moritzgauss/tearplate/refs/heads/main/riffelblech.jpg') no-repeat center center fixed;
+      background-size: cover;
+      overflow-x: hidden;
+      perspective: 1000px; /* Perspektivische Ansicht */
+    }
+
+    .parallax-container {
+      position: relative;
+      height: 400vh; /* Mehr Scrollplatz */
+      overflow: hidden;
+    }
+
+    .parallax-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: center;
+      text-align: center;
+      font-size: 3rem; /* Initiale Schriftgröße */
+      line-height: 1.5;
+      opacity: 0;
+      z-index: 2;
+      transform: translate(-50%, -50%) rotateX(30deg); /* Perspektivische Rotation */
+      white-space: nowrap;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .parallax-text p {
+      margin: 0.5em 0;
+    }
+
+    .menu-icon {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.3s ease;
+    }
+
+    .dropdown-menu {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      display: none;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 10;
+    }
+
+    .dropdown-menu.active {
+      display: flex;
+    }
+
+    .dropdown-menu a {
+      text-decoration: none;
+      color: black;
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+
+    @media (min-width: 1024px) {
+      .parallax-text {
+        font-size: 6rem; /* Größere Schrift auf Desktop */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-icon" id="menu-icon">🛠️</div>
+  <div class="dropdown-menu" id="dropdown-menu">
+    <a href="#leistungen">Leistungen</a>
+    <a href="#kontakt">Kontakt</a>
+    <a href="#team">Team</a>
+  </div>
+
+  <div class="parallax-container">
+    <div class="parallax-text" id="parallax-text">
+      <p>Schlosserbetrieb Offenbach</p>
+      <p>Qualität und Präzision</p>
+      <p>Metallarbeiten aller Art</p>
+      <p>Kontaktieren Sie uns!</p>
+      <p>Tel: +49 69 123456</p>
+    </div>
+  </div>
+
+  <script>
+    const menuIcon = document.getElementById('menu-icon');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+
+    menuIcon.addEventListener('click', () => {
+      menuIcon.classList.toggle('active');
+      dropdownMenu.classList.toggle('active');
+      menuIcon.textContent = menuIcon.classList.contains('active') ? '🔨' : '🛠️';
+    });
+
+    const parallaxText = document.getElementById('parallax-text');
+    const maxScale = 3; // Maximalgröße des Textes
+    const minScale = 0.1; // Minimale Größe
+    const startFadeIn = 100; // Scrollpunkt, ab dem der Text sichtbar wird
+    const startShrink = 800; // Scrollpunkt, ab dem der Text kleiner wird
+    const fadeOutEnd = 1500; // Scrollpunkt, ab dem der Text wieder unsichtbar wird
+    const sectionHeight = 5; // Höhe eines Textabschnitts für den Förderband-Effekt
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+
+      // Berechnung der Skalierung und Positionierung
+      let scale = minScale;
+      let opacity = 0;
+      let zTranslation = -scrollY / 10;
+
+      // Förderband-Effekt: Der Text wird in Etappen angezeigt
+      if (scrollY >= startFadeIn && scrollY < startShrink) {
+        // Phase 1: Von klein zu groß
+        scale = minScale + (maxScale - minScale) * ((scrollY - startFadeIn) / (startShrink - startFadeIn));
+        opacity = 1;
+      } else if (scrollY >= startShrink && scrollY < fadeOutEnd) {
+        // Phase 2: Wieder kleiner werden
+        scale = maxScale - (maxScale - minScale) * ((scrollY - startShrink) / (fadeOutEnd - startShrink));
+        opacity = 1;
+      }
+
+      // Ausblenden bei zu viel Entfernung vom Fluchtpunkt
+      if (scrollY > fadeOutEnd || scrollY < startFadeIn) {
+        opacity = 0;
+      }
+
+      // Perspektivische Verkleinerung und Rotation entlang der X-Achse
+      parallaxText.style.transform = `translate(-50%, -50%) scale(${scale}) translateZ(${zTranslation}px) rotateX(${30 - (scrollY / 10)}deg)`;
+      parallaxText.style.opacity = opacity;
+    });
+  </script>
+</body>
+</html>
